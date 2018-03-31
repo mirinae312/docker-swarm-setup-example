@@ -50,6 +50,15 @@ _join_command()
 }
 
 
+# leave from swarm
+# - @param1 docker-machine name
+leave()
+{
+    local DOCKER_MACHINE_NAME=$1
+    docker-machine ssh ${DOCKER_MACHINE_NAME} "docker swarm leave"
+}
+
+
 
 # shell script command support
 OPTION=${1}
@@ -67,11 +76,11 @@ case ${OPTION} in
             exit 1
         fi
         if [ ! "${3}" ];then
-            echo "ERROR(bad worker docker-machine name: ${3}) : required : j_swarm.sh join 'swarm-node join-type' 'docker-machine name of swarm-leader'"
+            echo "ERROR(bad worker docker-machine name: ${3}) : required : j_swarm.sh join 'swarm-node join-type' 'docker-machine node name' 'docker-machine node name of swarm-leader'"
             exit 1
         fi
         if [ ! "${4}" ];then
-            echo "ERROR(bad leader(manager) docker-machine name: ${4}) : required : j_swarm.sh join 'swarm-node join-type' 'docker-machine name of swarm-leader'"
+            echo "ERROR(bad leader(manager) docker-machine name: ${4}) : required : j_swarm.sh join 'swarm-node join-type' 'docker-machine node name' 'docker-machine node name of swarm-leader'"
             exit 1
         fi
         join ${2} ${3} ${4}
@@ -79,5 +88,12 @@ case ${OPTION} in
     *)
         echo "ERROR: wrong command ( ${OPTION} )"
         exit 1
+    ;;
+    "leave")
+        if [ ! "${2}" ];then
+            echo "ERROR : required : j_swarm.sh leave 'docker-machine node name'"
+            exit 1
+        fi
+        leave ${2}
     ;;
 esac
